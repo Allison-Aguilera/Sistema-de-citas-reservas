@@ -1,0 +1,8 @@
+# Python / Entorno virtual
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Credenciales
+.env
