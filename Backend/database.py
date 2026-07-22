@@ -15,7 +15,14 @@ DB_DSN = os.getenv("DB_DSN")
 DATABASE_URL = f"oracle+oracledb://{DB_USER}:{DB_PASSWORD}@/?dsn={DB_DSN}"
 
 # Creamos el motor de base de datos
-engine = create_engine(DATABASE_URL, echo=True)
+engine = create_engine(
+    DATABASE_URL,
+    echo=True,
+    pool_pre_ping=True,   # verifica que la conexión siga viva antes de usarla; si está muerta, la descarta y abre otra
+    pool_recycle=280,     # recicla conexiones cada ~4.5 min, antes de que Oracle las cierre por inactividad
+    pool_size=5,
+    max_overflow=10,
+)
 
 # Creamos la fábrica de sesiones para las consultas HTTP
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)

@@ -10,45 +10,119 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- FullCalendar CSS -->
     <link href='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.css' rel='stylesheet' />
-    
+    <!-- Tipografía -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
     <style>
+        :root {
+            --bs-primary: #1C6F66;
+            --bs-primary-rgb: 28, 111, 102;
+            --bs-primary-bg-subtle: #DCEEEA;
+            --bs-primary-border-subtle: #B7DBD5;
+            --bs-primary-text-emphasis: #14534C;
+            --bs-body-bg: #F5F7F6;
+            --bs-body-font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+
+            --color-libre: #3F8F5F;
+            --color-citas: #D9A441;
+            --color-bloqueado: #C1554A;
+        }
+        [data-bs-theme="dark"] {
+            --bs-primary: #4FCBB8;
+            --bs-primary-rgb: 79, 203, 184;
+            --bs-primary-bg-subtle: #123B37;
+            --bs-primary-border-subtle: #1C5750;
+            --bs-primary-text-emphasis: #8FE0D3;
+            --bs-body-bg: #14181A;
+
+            --color-libre: #57A876;
+            --color-citas: #E0B15C;
+            --color-bloqueado: #D6746A;
+        }
+
         body {
+            font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
             transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        h1, .fw-bold, .fc-toolbar-title {
+            font-weight: 700;
+            letter-spacing: -0.01em;
         }
         .card {
             border: none;
-            border-radius: 12px;
-            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.04);
+            border-radius: 14px;
+            box-shadow: 0 4px 24px rgba(20, 40, 38, 0.05);
             transition: background-color 0.3s ease, border-color 0.3s ease;
         }
         [data-bs-theme="dark"] .card {
-            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
-            background-color: #212529 !important;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.25);
+            background-color: #1B2023 !important;
         }
+
+        /* --- Calendario --- */
         .fc {
             --fc-border-color: var(--bs-border-color);
-            --fc-today-bg-color: rgba(var(--bs-primary-rgb), 0.05);
+            --fc-today-bg-color: rgba(var(--bs-primary-rgb), 0.06);
         }
         .fc-toolbar-title {
-            font-size: 1.25rem !important;
-            font-weight: 600;
+            font-size: 1.2rem !important;
         }
         .fc-button-primary {
-            background-color: #4f46e5 !important;
-            border-color: #4f46e5 !important;
-            border-radius: 6px !important;
-            font-weight: 500;
+            background-color: transparent !important;
+            border: 1.5px solid var(--bs-primary-border-subtle) !important;
+            color: var(--bs-primary-text-emphasis) !important;
+            border-radius: 8px !important;
+            font-weight: 600;
             text-transform: capitalize;
+            padding: 6px 14px !important;
+            box-shadow: none !important;
         }
         .fc-button-primary:hover {
-            background-color: #4338ca !important;
-            border-color: #4338ca !important;
+            background-color: var(--bs-primary-bg-subtle) !important;
+            border-color: var(--bs-primary-border-subtle) !important;
         }
-        .panel-header {
-            font-size: 0.85rem;
+        .fc-button-primary:not(:disabled).fc-button-active,
+        .fc-button-primary:not(:disabled):active {
+            background-color: var(--bs-primary) !important;
+            border-color: var(--bs-primary) !important;
+            color: #fff !important;
+        }
+        .fc-daygrid-day-number, .fc-col-header-cell-cushion {
+            font-weight: 500;
+            color: var(--bs-body-color);
+        }
+
+        /* --- Leyenda de estado (elemento firma) --- */
+        .leyenda-estado {
+            display: flex;
+            gap: 18px;
+            flex-wrap: wrap;
+            font-size: 0.82rem;
             font-weight: 600;
-            letter-spacing: 0.05em;
-            color: #64748b;
+            color: var(--bs-secondary-color);
+            margin-bottom: 16px;
+            padding-bottom: 14px;
+            border-bottom: 1px solid var(--bs-border-color);
+        }
+        .leyenda-item {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+        }
+        .leyenda-punto {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .panel-header {
+            font-size: 0.8rem;
+            font-weight: 700;
+            letter-spacing: 0.06em;
+            color: var(--bs-secondary-color);
             text-transform: uppercase;
             border-bottom: 2px solid var(--bs-border-color);
             padding-bottom: 8px;
@@ -56,52 +130,47 @@
         }
         .evento-item {
             transition: all 0.2s ease;
-            border-left: 3px solid #ffc107;
+            border-left: 3px solid var(--color-citas);
             padding: 10px 12px;
-            border-radius: 0 8px 8px 0;
+            border-radius: 0 10px 10px 0;
             margin-bottom: 8px;
         }
         [data-bs-theme="light"] .evento-item {
-            background: #f8f9fa;
+            background: #F8FAF9;
         }
         [data-bs-theme="dark"] .evento-item {
-            background: #2b3035;
+            background: #23292C;
         }
         .evento-item:hover {
             transform: translateX(3px);
         }
-        /* Estilos personalizados para los días según reglas */
-        .dia-bloqueado {
-            background-color: rgba(220, 53, 69, 0.15) !important;
-        }
-        .dia-con-citas {
-            background-color: rgba(255, 193, 7, 0.2) !important;
-        }
-        .dia-libre {
-            background-color: transparent !important;
-        }
-        /* Botón flotante para agregar cita */
+
+        /* --- Estados de día --- */
+        .dia-bloqueado { background-color: rgba(193, 85, 74, 0.14) !important; }
+        .dia-con-citas { background-color: rgba(217, 164, 65, 0.20) !important; }
+        .dia-libre     { background-color: rgba(63, 143, 95, 0.12) !important; }
+
+        /* --- Botón flotante --- */
         .btn-flotante-mas {
             position: absolute;
-            bottom: 15px;
-            right: 15px;
-            width: 45px;
-            height: 45px;
+            bottom: 18px;
+            right: 18px;
+            width: 46px;
+            height: 46px;
             border-radius: 50%;
-            background-color: #4f46e5;
+            background-color: var(--bs-primary);
             color: white;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            box-shadow: 0 6px 16px rgba(var(--bs-primary-rgb), 0.35);
             cursor: pointer;
             z-index: 10;
-            transition: transform 0.2s;
+            transition: transform 0.2s, box-shadow 0.2s;
         }
         .btn-flotante-mas:hover {
-            transform: scale(1.1);
-            background-color: #4338ca;
-            color: white;
+            transform: scale(1.08);
+            box-shadow: 0 8px 20px rgba(var(--bs-primary-rgb), 0.45);
         }
     </style>
 </head>
@@ -109,7 +178,7 @@
 
     <div class="container-fluid py-4 px-4" style="max-width: 1400px; position: relative;">
         
-        <!-- Barra superior limpia con botón de modo oscuro -->
+        <!-- Barra superior -->
         <div class="row mb-4">
             <div class="col-12 bg-body-tertiary px-4 py-3 rounded-4 shadow-sm d-flex justify-content-between align-items-center border">
                 <div class="d-flex align-items-center">
@@ -121,7 +190,6 @@
                         <p class="text-muted small mb-0">Gestión y control de agenda</p>
                     </div>
                 </div>
-                <!-- Botón Interruptor Tema -->
                 <button id="btn-tema" onclick="alternarTema()" class="btn btn-outline-secondary btn-sm rounded-circle p-2" style="width: 38px; height: 38px;" title="Cambiar tema">
                     <i class="fa-solid fa-moon" id="icono-tema"></i>
                 </button>
@@ -130,21 +198,36 @@
 
         <!-- Layout Principal -->
         <div class="row g-4">
-            <!-- Calendario (Izquierda) con botón flotante -->
+            <!-- Calendario -->
             <div class="col-lg-8 position-relative">
                 <div class="card p-4 bg-body" style="min-height: 700px;">
+
+                    <!-- Leyenda de estado -->
+                    <div class="leyenda-estado">
+                        <div class="leyenda-item">
+                            <span class="leyenda-punto" style="background: var(--color-libre);"></span>
+                            Disponible
+                        </div>
+                        <div class="leyenda-item">
+                            <span class="leyenda-punto" style="background: var(--color-citas);"></span>
+                            Con citas
+                        </div>
+                        <div class="leyenda-item">
+                            <span class="leyenda-punto" style="background: var(--color-bloqueado);"></span>
+                            No laborable
+                        </div>
+                    </div>
+
                     <div id="calendar"></div>
                 </div>
-                <!-- Botón + para abrir formulario de nueva cita -->
                 <div class="btn-flotante-mas" onclick="abrirFormularioCita()" title="Nueva Cita">
                     <i class="fa-solid fa-plus fs-5"></i>
                 </div>
             </div>
 
-            <!-- Panel Lateral (Derecha) -->
+            <!-- Panel Lateral -->
             <div class="col-lg-4">
                 
-                <!-- Sección HOY -->
                 <div class="card p-4 mb-4 bg-body">
                     <div class="panel-header">
                         <i class="fa-solid fa-circle-dot text-warning me-2 fs-6"></i>HOY
@@ -154,7 +237,6 @@
                     </div>
                 </div>
 
-                <!-- Sección PRÓXIMOS EVENTOS -->
                 <div class="card p-4 bg-body">
                     <div class="panel-header">
                         <i class="fa-regular fa-clock me-2"></i>PRÓXIMOS EVENTOS
@@ -173,224 +255,8 @@
     <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <!-- FullCalendar JS -->
-    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js'></script>
-
-    <script>
-        let calendar;
-        let fechasConCitasSet = new Set();
-
-        document.addEventListener('DOMContentLoaded', function() {
-            var calendarEl = document.getElementById('calendar');
-            
-            calendar = new FullCalendar.Calendar(calendarEl, {
-                initialView: 'dayGridMonth',
-                locale: 'es',
-                headerToolbar: {
-                    left: 'prev,next today',
-                    center: 'title',
-                    right: 'dayGridMonth,timeGridWeek'
-                },
-                // Pintar los días según reglas: Rojo (Sábado/Domingo), Amarillo (Citas), Libre (Normal)
-                dayCellDidMount: function(info) {
-                    const diaSemana = info.date.getDay(); // 0 = Domingo, 6 = Sábado
-                    const fechaStr = info.date.toISOString().split('T')[0];
-
-                    if (diaSemana === 0 || diaSemana === 6) {
-                        info.el.classList.add('dia-bloqueado');
-                    } else if (fechasConCitasSet.has(fechaStr)) {
-                        info.el.classList.add('dia-con-citas');
-                    } else {
-                        info.el.classList.add('dia-libre');
-                    }
-                },
-                events: function(fetchInfo, successCallback, failureCallback) {
-                    fetch("http://127.0.0.1:8000/citas/")
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.citas) {
-                                fechasConCitasSet.clear();
-                                const eventos = data.citas.map(cita => {
-                                    if (cita.fecha_inicio) {
-                                        fechasConCitasSet.add(cita.fecha_inicio.split('T')[0]);
-                                    }
-                                    return {
-                                        id: cita.id_cita,
-                                        title: `${cita.nombre_cliente || 'Cliente'} — ${cita.servicio || 'Servicio'}`,
-                                        start: cita.fecha_inicio,
-                                        end: cita.fecha_fin || cita.fecha_inicio,
-                                        backgroundColor: '#ffc107',
-                                        borderColor: '#ffc107',
-                                        textColor: '#000',
-                                        extendedProps: {
-                                            telefono: cita.telefono,
-                                            estado: cita.estado
-                                        }
-                                    };
-                                });
-
-                                // Refrescar el calendario para aplicar colores en celdas
-                                calendar.render();
-                                actualizarPanelesLaterales(data.citas);
-                                successCallback(eventos);
-                            } else {
-                                successCallback([]);
-                            }
-                        })
-                        .catch(error => {
-                            console.error("Error al cargar citas:", error);
-                            failureCallback(error);
-                        });
-                },
-                eventClick: function(info) {
-                    const esOscuro = document.documentElement.getAttribute('data-bs-theme') === 'dark';
-
-                    Swal.fire({
-                        title: `<span class="h5">Cita #${info.event.id}</span>`,
-                        html: `
-                            <div class="text-start px-3 py-2">
-                                <p class="mb-2"><strong>Cliente:</strong> ${info.event.title.split(' — ')[0]}</p>
-                                <p class="mb-2"><strong>Servicio:</strong> ${info.event.title.split(' — ')[1] || 'N/A'}</p>
-                                <p class="mb-2"><strong>Teléfono:</strong> ${info.event.extendedProps.telefono || 'N/A'}</p>
-                                <p class="mb-0"><strong>Fecha:</strong> ${info.event.start.toLocaleDateString()}</p>
-                            </div>
-                        `,
-                        icon: 'none',
-                        confirmButtonText: 'Cerrar',
-                        confirmButtonColor: '#4f46e5',
-                        background: esOscuro ? '#212529' : '#fff',
-                        color: esOscuro ? '#fff' : '#000',
-                        customClass: { popup: 'rounded-4' }
-                    });
-                }
-            });
-
-            calendar.render();
-        });
-
-        // Función para abrir el formulario flotante con SweetAlert2
-        function abrirFormularioCita() {
-            const esOscuro = document.documentElement.getAttribute('data-bs-theme') === 'dark';
-
-            Swal.fire({
-                title: 'Nueva Cita',
-                html: `
-                    <form id="form-nueva-cita" class="text-start px-2">
-                        <div class="mb-3">
-                            <label class="form-label small fw-semibold">Nombre del Cliente</label>
-                            <input type="text" id="swal-nombre" class="form-control form-control-sm" placeholder="Ej. Juan Pérez">
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label small fw-semibold">Teléfono</label>
-                            <input type="text" id="swal-telefono" class="form-control form-control-sm" placeholder="Ej. +504 9999-9999">
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label small fw-semibold">Servicio</label>
-                            <input type="text" id="swal-servicio" class="form-control form-control-sm" placeholder="Ej. Consulta general">
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label small fw-semibold">Fecha de Inicio</label>
-                            <input type="date" id="swal-fecha" class="form-control form-control-sm">
-                        </div>
-                    </form>
-                `,
-                showCancelButton: true,
-                confirmButtonText: 'Guardar Cita',
-                cancelButtonText: 'Cancelar',
-                confirmButtonColor: '#4f46e5',
-                background: esOscuro ? '#212529' : '#fff',
-                color: esOscuro ? '#fff' : '#000',
-                customClass: { popup: 'rounded-4' },
-                preConfirm: () => {
-                    const nombre = document.getElementById('swal-nombre').value;
-                    const fecha = document.getElementById('swal-fecha').value;
-
-                    if (!nombre || !fecha) {
-                        Swal.showValidationMessage('Por favor completa al menos el nombre y la fecha');
-                        return false;
-                    }
-                    
-                    return { nombre, fecha };
-                }
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    Swal.fire({
-                        toast: true,
-                        position: 'top-end',
-                        icon: 'success',
-                        title: 'Datos capturados (Simulación)',
-                        text: 'Conecta el endpoint POST para guardar.',
-                        showConfirmButton: false,
-                        timer: 3000,
-                        timerProgressBar: true,
-                        background: esOscuro ? '#212529' : '#fff',
-                        color: esOscuro ? '#fff' : '#000'
-                    });
-                }
-            });
-        }
-
-        // Función para cambiar de modo claro a oscuro de manera fluida
-        function alternarTema() {
-            const htmlTag = document.documentElement;
-            const iconoTema = document.getElementById('icono-tema');
-
-            if (htmlTag.getAttribute('data-bs-theme') === 'light') {
-                htmlTag.setAttribute('data-bs-theme', 'dark');
-                iconoTema.className = "fa-solid fa-sun";
-            } else {
-                htmlTag.setAttribute('data-bs-theme', 'light');
-                iconoTema.className = "fa-solid fa-moon";
-            }
-        }
-
-        function actualizarPanelesLaterales(citas) {
-            const panelHoy = document.getElementById("panel-hoy");
-            const panelProximos = document.getElementById("panel-proximos");
-
-            const hoyStr = new Date().toISOString().split('T')[0];
-            
-            let fechaLimite = new Date();
-            fechaLimite.setDate(fechaLimite.getDate() + 5);
-            let limiteStr = fechaLimite.toISOString().split('T')[0];
-
-            let citasHoy = [];
-            let citasProximas = [];
-
-            citas.forEach(cita => {
-                if (!cita.fecha_inicio) return;
-                let fechaCita = cita.fecha_inicio.split('T')[0];
-
-                if (fechaCita === hoyStr) {
-                    citasHoy.push(cita);
-                } else if (fechaCita > hoyStr && fechaCita <= limiteStr) {
-                    citasProximas.push(cita);
-                }
-            });
-
-            if (citasHoy.length > 0) {
-                panelHoy.innerHTML = citasHoy.map(c => `
-                    <div class="evento-item">
-                        <div class="fw-semibold text-body text-truncate">${c.nombre_cliente || 'Sin nombre'}</div>
-                        <div class="text-muted small">${c.servicio || 'Servicio general'}</div>
-                        <div class="text-warning-emphasis small mt-1"><i class="fa-solid fa-phone me-1" style="font-size: 0.75rem;"></i>${c.telefono || 'N/A'}</div>
-                    </div>
-                `).join('');
-            } else {
-                panelHoy.innerHTML = `<div class="text-muted small py-2">Sin citas para hoy.</div>`;
-            }
-
-            if (citasProximas.length > 0) {
-                panelProximos.innerHTML = citasProximas.map(c => `
-                    <div class="evento-item" style="border-left-color: #64748b;">
-                        <span class="badge bg-secondary-subtle text-secondary border mb-1" style="font-size: 0.7rem;">${c.fecha_inicio.split('T')[0]}</span>
-                        <div class="fw-semibold text-body text-truncate">${c.nombre_cliente || 'Sin nombre'}</div>
-                        <div class="text-muted small">${c.servicio || 'Servicio general'}</div>
-                    </div>
-                `).join('');
-            } else {
-                panelProximos.innerHTML = `<div class="text-muted small py-2">No hay próximos eventos recientes.</div>`;
-            }
-        }
-    </script>
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
+    <!-- Tu lógica de la aplicación -->
+    <script src="/static/app.js"></script>
 </body>
 </html>

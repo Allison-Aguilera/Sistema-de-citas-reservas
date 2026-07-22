@@ -1,13 +1,13 @@
-from sqlalchemy import Column, Integer, String, Date, Numeric
+from sqlalchemy import Column, Integer, String, DateTime, Numeric, Identity
 from Backend.database import Base
 
 class Cita(Base):
     __tablename__ = "cita"
 
-    id_cita = Column(Integer, primary_key=True, index=True, autoincrement=False) # Oracle IDENTITY maneja esto
+    id_cita = Column(Integer, Identity(start=1, always=False), primary_key=True)
     nombre_cliente = Column(String(150), nullable=True)
     telefono = Column(String(30), nullable=True)
     servicio = Column(String(150), nullable=True)
-    fecha_inicio = Column(Date, nullable=True)
-    fecha_fin = Column(Date, nullable=True)
-    estado = Column(Numeric, nullable=True) # Usamos Numeric/Integer para el estado numérico
+    fecha_inicio = Column(DateTime, nullable=True)
+    fecha_fin = Column(DateTime, nullable=True)
+    estado = Column(Numeric, nullable=True)
