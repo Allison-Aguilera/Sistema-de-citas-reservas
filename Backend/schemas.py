@@ -8,7 +8,7 @@ class CitaBase(BaseModel):
     servicio: Optional[str] = None
     fecha_inicio: Optional[datetime] = None
     fecha_fin: Optional[datetime] = None
-    estado: Optional[float] = None
+    estado: Optional[int] = None  # 1=Pendiente, 2=Confirmada, 3=Cancelada, 4=Completada
 
 class CitaCrear(CitaBase):
     nombre_cliente: str
