@@ -1,2 +1,2 @@
 # Sistema-de-citas-reservas
-Agenda de Citas
+Agenda de citas que administra calendarios, horarios hábiles y estados de turnos.

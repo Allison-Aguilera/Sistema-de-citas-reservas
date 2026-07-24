@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="es" data-bs-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agenda de Citas</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome para iconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- FullCalendar CSS -->
+    <link href='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.css' rel='stylesheet' />
+    <!-- Tipografía -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bs-primary: #0E8074;
+            --bs-primary-rgb: 14, 128, 116;
+            --bs-primary-bg-subtle: #CDEDE7;
+            --bs-primary-border-subtle: #8FD4C7;
+            --bs-primary-text-emphasis: #0B5C53;
+            --bs-body-bg: #F5F7F6;
+            --bs-body-font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+
+            --color-libre: #21A15A;
+            --color-citas: #F0A202;
+            --color-bloqueado: #E23D32;
+        }
+        [data-bs-theme="dark"] {
+            --bs-primary: #22D3B8;
+            --bs-primary-rgb: 34, 211, 184;
+            --bs-primary-bg-subtle: #0F3D37;
+            --bs-primary-border-subtle: #1D6459;
+            --bs-primary-text-emphasis: #6FF0D9;
+            --bs-body-bg: #14181A;
+
+            --color-libre: #34D371;
+            --color-citas: #FFC53D;
+            --color-bloqueado: #FF5C4D;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        h1, .fw-bold, .fc-toolbar-title {
+            font-weight: 700;
+            letter-spacing: -0.01em;
+        }
+        .card {
+            border: none;
+            border-radius: 14px;
+            box-shadow: 0 4px 24px rgba(20, 40, 38, 0.05);
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+        }
+        [data-bs-theme="dark"] .card {
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.25);
+            background-color: #1B2023 !important;
+        }
+
+        /* --- Calendario --- */
+        .fc {
+            --fc-border-color: var(--bs-border-color);
+            --fc-today-bg-color: rgba(var(--bs-primary-rgb), 0.06);
+        }
+        .fc-toolbar-title {
+            font-size: 1.2rem !important;
+        }
+        .fc-button-primary {
+            background-color: transparent !important;
+            border: 1.5px solid var(--bs-primary-border-subtle) !important;
+            color: var(--bs-primary-text-emphasis) !important;
+            border-radius: 8px !important;
+            font-weight: 600;
+            text-transform: capitalize;
+            padding: 6px 14px !important;
+            box-shadow: none !important;
+        }
+        .fc-button-primary:hover {
+            background-color: var(--bs-primary-bg-subtle) !important;
+            border-color: var(--bs-primary-border-subtle) !important;
+        }
+        .fc-button-primary:not(:disabled).fc-button-active,
+        .fc-button-primary:not(:disabled):active {
+            background-color: var(--bs-primary) !important;
+            border-color: var(--bs-primary) !important;
+            color: #fff !important;
+        }
+        .fc-daygrid-day-number, .fc-col-header-cell-cushion {
+            font-weight: 500;
+            color: var(--bs-body-color);
+        }
+
+        /* --- Leyenda de estado (elemento firma) --- */
+        .leyenda-estado {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--bs-body-color);
+            margin-bottom: 16px;
+            padding-bottom: 14px;
+            border-bottom: 1px solid var(--bs-border-color);
+        }
+        .leyenda-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .leyenda-punto {
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            display: inline-block;
+            border: 2px solid var(--bs-body-bg);
+            box-shadow: 0 0 0 1.5px rgba(0,0,0,0.15);
+        }
+        [data-bs-theme="dark"] .leyenda-punto {
+            box-shadow: 0 0 0 1.5px rgba(255,255,255,0.18);
+        }
+
+        .panel-header {
+            font-size: 0.8rem;
+            font-weight: 700;
+            letter-spacing: 0.06em;
+            color: var(--bs-secondary-color);
+            text-transform: uppercase;
+            border-bottom: 2px solid var(--bs-border-color);
+            padding-bottom: 8px;
+            margin-bottom: 12px;
+        }
+        .evento-item {
+            transition: all 0.2s ease;
+            border-left: 3px solid var(--color-citas);
+            padding: 10px 12px;
+            border-radius: 0 10px 10px 0;
+            margin-bottom: 8px;
+        }
+        [data-bs-theme="light"] .evento-item {
+            background: #F8FAF9;
+        }
+        [data-bs-theme="dark"] .evento-item {
+            background: #23292C;
+        }
+        .evento-item:hover {
+            transform: translateX(3px);
+        }
+
+        /* --- Estados de día --- */
+        .dia-bloqueado { background-color: rgba(226, 61, 50, 0.24) !important; }
+        .dia-con-citas { background-color: rgba(240, 162, 2, 0.30) !important; }
+        .dia-libre     { background-color: rgba(33, 161, 90, 0.22) !important; }
+        [data-bs-theme="dark"] .dia-bloqueado { background-color: rgba(255, 92, 77, 0.22) !important; }
+        [data-bs-theme="dark"] .dia-con-citas { background-color: rgba(255, 197, 61, 0.20) !important; }
+        [data-bs-theme="dark"] .dia-libre     { background-color: rgba(52, 211, 113, 0.18) !important; }
+
+        /* --- Modal de detalle de cita --- */
+        .detalle-cita {
+            text-align: left;
+            padding: 4px 6px;
+        }
+        .detalle-header {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 18px;
+        }
+        .badge-estado-grande {
+            padding: 6px 18px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 0.78rem;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+        }
+        .detalle-fila {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 11px 0;
+            border-bottom: 1px solid var(--bs-border-color);
+        }
+        .detalle-fila:last-child {
+            border-bottom: none;
+        }
+        .detalle-icono {
+            width: 34px;
+            height: 34px;
+            border-radius: 9px;
+            background: var(--bs-primary-bg-subtle);
+            color: var(--bs-primary-text-emphasis);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+            flex-shrink: 0;
+        }
+        .detalle-label {
+            font-size: 0.68rem;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--bs-secondary-color);
+            font-weight: 700;
+            margin-bottom: 2px;
+        }
+        .detalle-valor {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--bs-body-color);
+        }
+
+        /* --- Botón flotante --- */
+        .btn-flotante-mas {
+            position: absolute;
+            bottom: 18px;
+            right: 18px;
+            width: 46px;
+            height: 46px;
+            border-radius: 50%;
+            background-color: var(--bs-primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 6px 16px rgba(var(--bs-primary-rgb), 0.35);
+            cursor: pointer;
+            z-index: 10;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .btn-flotante-mas:hover {
+            transform: scale(1.08);
+            box-shadow: 0 8px 20px rgba(var(--bs-primary-rgb), 0.45);
+        }
+    </style>
+</head>
+<body class="bg-body">
+
+    <div class="container-fluid py-4 px-4" style="max-width: 1400px; position: relative;">
+        
+        <!-- Barra superior -->
+        <div class="row mb-4">
+            <div class="col-12 bg-body-tertiary px-4 py-3 rounded-4 shadow-sm d-flex justify-content-between align-items-center border">
+                <div class="d-flex align-items-center">
+                    <div class="bg-primary-subtle text-primary p-2 rounded-3 me-3">
+                        <i class="fa-regular fa-calendar-check fs-4"></i>
+                    </div>
+                    <div>
+                        <h1 class="h5 mb-0 fw-bold">Panel de Citas</h1>
+                        <p class="text-muted small mb-0">Gestión y control de agenda</p>
+                    </div>
+                </div>
+                <button id="btn-tema" onclick="alternarTema()" class="btn btn-outline-secondary btn-sm rounded-circle p-2" style="width: 38px; height: 38px;" title="Cambiar tema">
+                    <i class="fa-solid fa-moon" id="icono-tema"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Layout Principal -->
+        <div class="row g-4">
+            <!-- Calendario (ancho completo) -->
+            <div class="col-12 position-relative">
+                <div class="card p-4 bg-body" style="min-height: 650px;">
+
+                    <!-- Leyenda de estado de cita -->
+                    <div class="leyenda-estado" style="border-bottom: none; padding-bottom: 0; margin-bottom: 14px;">
+                        <div class="leyenda-item">
+                            <span class="leyenda-punto" style="background: #F0A202;"></span>
+                            Pendiente
+                        </div>
+                        <div class="leyenda-item">
+                            <span class="leyenda-punto" style="background: #2E6FD9;"></span>
+                            Confirmada
+                        </div>
+                        <div class="leyenda-item">
+                            <span class="leyenda-punto" style="background: #E23D32;"></span>
+                            Cancelada
+                        </div>
+                        <div class="leyenda-item">
+                            <span class="leyenda-punto" style="background: #6c757d;"></span>
+                            Completada
+                        </div>
+                    </div>
+
+                    <div id="calendar"></div>
+                </div>
+                <div class="btn-flotante-mas" onclick="abrirFormularioCita()" title="Nueva Cita">
+                    <i class="fa-solid fa-plus fs-5"></i>
+                </div>
+            </div>
+
+            <!-- Paneles (debajo del calendario, en fila) -->
+            <div class="col-lg-4 col-md-6">
+                <div class="card p-4 bg-body h-100">
+                    <div class="panel-header">
+                        <i class="fa-solid fa-circle-dot text-warning me-2 fs-6"></i>HOY
+                    </div>
+                    <div id="panel-hoy">
+                        <div class="text-muted small py-2">Sin citas programadas para hoy.</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4 col-md-6">
+                <div class="card p-4 bg-body h-100">
+                    <div class="panel-header">
+                        <i class="fa-regular fa-clock me-2"></i>PRÓXIMOS EVENTOS
+                    </div>
+                    <div id="panel-proximos" style="max-height: 380px; overflow-y: auto;">
+                        <div class="text-muted small py-2">No hay próximos eventos.</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4 col-md-12">
+                <!-- Sección CITAS POR ESTADO -->
+                <div class="card p-4 bg-body h-100">
+                    <div class="panel-header">
+                        <i class="fa-solid fa-layer-group me-2"></i>CITAS POR ESTADO
+                    </div>
+                    <ul class="nav nav-pills nav-fill mb-3 small gap-1" id="tabs-estado" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active px-2" data-bs-toggle="pill" data-bs-target="#panel-estado-1" type="button">
+                                Pendientes <span class="badge rounded-pill ms-1" id="badge-estado-1" style="background:#F0A202; color:#1E2A28;">0</span>
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link px-2" data-bs-toggle="pill" data-bs-target="#panel-estado-2" type="button">
+                                Confirmadas <span class="badge rounded-pill ms-1" id="badge-estado-2" style="background:#2E6FD9;">0</span>
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link px-2" data-bs-toggle="pill" data-bs-target="#panel-estado-3" type="button">
+                                Canceladas <span class="badge rounded-pill ms-1" id="badge-estado-3" style="background:#E23D32;">0</span>
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link px-2" data-bs-toggle="pill" data-bs-target="#panel-estado-4" type="button">
+                                Completadas <span class="badge rounded-pill ms-1" id="badge-estado-4" style="background:#6c757d;">0</span>
+                            </button>
+                        </li>
+                    </ul>
+                    <div class="tab-content" style="max-height: 320px; overflow-y: auto;">
+                        <div class="tab-pane fade show active" id="panel-estado-1">
+                            <div class="text-muted small py-2">Sin citas pendientes.</div>
+                        </div>
+                        <div class="tab-pane fade" id="panel-estado-2">
+                            <div class="text-muted small py-2">Sin citas confirmadas.</div>
+                        </div>
+                        <div class="tab-pane fade" id="panel-estado-3">
+                            <div class="text-muted small py-2">Sin citas canceladas.</div>
+                        </div>
+                        <div class="tab-pane fade" id="panel-estado-4">
+                            <div class="text-muted small py-2">Sin citas completadas.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+          <!-- Footer -->
+        <footer  class="text-center bg-primary-subtle text-primary-emphasis small py-3 mt-2 rounded-4">
+            &copy 2026 Sistema de Citas para Consultas Médicas
+            <p></p>Elaborado por Allison Aguilera & Evon Zelaya
+        </footer>
+
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- FullCalendar JS -->
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js'></script>
+    <!-- Tu lógica de la aplicación -->
+    <script src="/static/app.js"></script>
+</body>
+</html>
